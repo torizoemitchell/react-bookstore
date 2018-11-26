@@ -4,7 +4,7 @@ import CartItem from './cart-item'
 export default class CartItems extends React.Component{
 
   render(){
-      console.log("this.props",this.props)
+      console.log("this.props.books",this.props.books)
 
       return(
         <div className="container">
@@ -17,7 +17,7 @@ export default class CartItems extends React.Component{
                 <div className="col-md-2">Price</div>
               </div>
             </div>
-            <h4>cart items here</h4>
+            {this.props.books.filter((elem) => elem.inCart === true).map((elem) => <CartItem title={elem.title} author={elem.author} price={elem.price}/>)}
           </div>
         </div>
       )

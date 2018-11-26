@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import './App.css'
 import PageHeader from './components/header'
 import BookList from './components/book-list'
+import CartItems from './components/cart-items'
 
 class App extends Component {
 
@@ -10,8 +11,6 @@ class App extends Component {
     this.state = {
       isLoaded: false,
       books: {},
-      //cart items ex: {title: bookTitle, author: bookAuthor, price: bookPrice}
-      cartItems: {}
     }
   }
 
@@ -29,26 +28,31 @@ class App extends Component {
     console.log("title: ", title)
     //find this item in the available books:
     const books = this.state.books
-    var bookObjToAdd
-    books.forEach((elem) => {
+    var bookToAddIdx
+    books.forEach((elem, idx) => {
       if (title === elem.title){
-        bookObjToAdd = elem
-        console.log("bookToAdd: ", bookObjToAdd)
+        bookToAddIdx = idx
+        console.log("bookToAddIdx: ", bookToAddIdx)
       }
     })
-    const bookToAdd = {
-      title: bookObjToAdd.title,
-      author: bookObjToAdd.author,
-      price: bookObjToAdd.price
-    }
-    //update cartItems in state with this item.
+    //update inCart for this item in state:
     this.setState({
       ...this.state,
-      cartItems:{
-        ...this.state.cartItems,
-        bookToAdd
-      }
+      books: this.editInCart(this.state.books, bookToAddIdx)
     })
+  }
+
+  //takes an array of objects and edits the inCart property at the index.
+  //without mutating, returns the new array.
+  editInCart = (array, idx) =>{
+    const newObject = array[idx]
+    newObject.inCart = true
+    // const newArray = array.slice(idx+1)
+    return [
+      ...array.slice(0, idx),
+      newObject,
+      ...array.slice(idx + 1)
+    ]
   }
 
   render() {
@@ -68,7 +72,8 @@ class App extends Component {
                 <BookList books={this.state.books} addBookToCartCB={this.addBookToCart}/>
               </div>
               <div className="col-6">
-                <h4>cart goes here</h4>
+                <CartItems books={this.state.books} />
+                <h4>Total: ${this.state.books.filter((elem) => elem.inCart === true).length > 0 ? this.state.books.filter(elem => elem.inCart).map(elem => elem.price).reduce((acc, current) => acc + current) : "0"}.00</h4>
               </div>
             </div>
           </div>
