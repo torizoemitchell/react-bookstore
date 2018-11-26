@@ -3,6 +3,7 @@ import './App.css'
 import PageHeader from './components/header'
 import BookList from './components/book-list'
 import CartItems from './components/cart-items'
+import SearchItems from './components/search-items'
 
 class App extends Component {
 
@@ -20,6 +21,7 @@ class App extends Component {
     this.setState({
       books: jsonResponse,
       isLoaded: true,
+      searchTerm: false
     })
   }
 
@@ -55,6 +57,18 @@ class App extends Component {
     ]
   }
 
+
+  filterBooks = (str) => {
+    this.setState({
+      ...this.state,
+      searchTerm: str
+    })
+  }
+
+  searchList = (searchTerm) => {
+    return this.state.books.filter(elem => elem.title.substring(0, searchTerm.length) === searchTerm || elem.author.substring(0, searchTerm.length) === searchTerm)
+  }
+
   render() {
     if(!this.state.isLoaded){
       return(
@@ -65,11 +79,11 @@ class App extends Component {
     }else{
       return (
         <div className="App">
-          <PageHeader/>
+          <PageHeader filterBooksCB={this.filterBooks} searchStringCB={this.searchString}/>
           <div className="container-fluid">
             <div className="row">
               <div className="col-6">
-                <BookList books={this.state.books} addBookToCartCB={this.addBookToCart}/>
+                {this.state.searchTerm ? <SearchItems searchResults={this.searchList(this.state.searchTerm)} addBookToCartCB={this.addBookToCart}/> : <BookList books={this.state.books} addBookToCartCB={this.addBookToCart}/>}
               </div>
               <div className="col-6">
                 <CartItems books={this.state.books} />
